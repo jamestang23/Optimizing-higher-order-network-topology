@@ -16,7 +16,7 @@
 clear;
 InitialNet=1;%the two types of initialization as described in text: chose 1 or 2.
 figurefolder=pwd;
-figureSubfolder=[figurefolder,'\DirectedNetworkAsymmetry2'];
+figureSubfolder=[figurefolder,'\DirectedNetworkR1'];
 mkdir(figureSubfolder);
 NumberNodes=[6, 10, 20,50,80,100];%Network sizes
 p=0.25; %percentile for the bar graph errorbar
@@ -33,10 +33,6 @@ eigv2 = sort(real(eig(lap2)));
 eigenratio.Second{k}(realization) = real(eigv2(end))/real(eigv2(2));
 AsymmetryIndex1{k}(realization) = mean(Summary.AsymmetryIndex1{NumberNode});
 AsymmetryIndex2{k}(realization) = mean(Summary.AsymmetryIndex2{NumberNode});
-
-idx = find(Summary.AdjTensorOptimal{NumberNode} == 1);
-Density{k}(realization) = size(idx,1)/NumberNode;
-Density2{k}(realization) = mean(CalculateDegree(Summary.AdjTensorOptimal{NumberNode}));
 
 k=k+1;
 end
@@ -63,7 +59,7 @@ leg1 =ylabel({'Average asymmetric measure\\','for each node'});
 set(leg1,'Interpreter','latex');
 leg2 = xlabel('Network size');
 set(leg2,'Interpreter','latex');
-ylim([0, 10]);
+%ylim([0, 10]);
 %set(gca, 'YScale', 'log');ylim([0.9 1e3]);
 set(gca,'FontSize',16,'linewidth',1.5);
 figurenamehmm=[figureSubfolder,'\ViolinAsymmetry1Directed_InitialNet_',num2str(InitialNet),'.jpg'];
@@ -87,36 +83,10 @@ leg1 =ylabel({'Average asymmetric measure\\','for each node'});
 set(leg1,'Interpreter','latex');
 leg2 = xlabel('Network size');
 set(leg2,'Interpreter','latex');
-ylim([0, 25]);
+%ylim([0, 25]);
 %set(gca, 'YScale', 'log');ylim([0.9 1e3]);
 set(gca,'FontSize',16,'linewidth',1.5);
 figurenamehmm=[figureSubfolder,'\ViolinAsymmetry2Directed_InitialNet_',num2str(InitialNet),'.jpg'];
-print(gcf, '-djpeg', '-r300',figurenamehmm)%saveas(gcf,figurenamehmm)
-
-
-
-
-colors = hsv(length(Density2));
-figure ('position', [00, 10, 500, 400]);
-for ii=1:length(Density2)
-violinPlot(Density2{ii}','xValues',ii, 'histOri', 'left', 'widthDiv', [2 1], 'showMM', 0,...
-    'color',  mat2cell(colors(ii, : ), 1)); hold on;
-violinPlot(Density2{ii}','xValues',ii, 'histOri', 'right', 'widthDiv', [2 2], 'showMM', 0,...
-    'color',  mat2cell(colors(ii, : ), 1));
-end
-alpha(.5);
-set(gca, 'xlim', [0 length(Density2)+1],'XTick',1:length(Density2),'XTickLabel',string(NumberNodes));
-set(gca,'TickLabelInterpreter','none');
-box on;
-%xtickangle(45)
-leg1 =ylabel({'Average generalized node degree'});
-set(leg1,'Interpreter','latex');
-leg2 = xlabel('Network size');
-set(leg2,'Interpreter','latex');
-ylim([0, 10]);
-%set(gca, 'YScale', 'log');ylim([0.9 1e3]);
-set(gca,'FontSize',16,'linewidth',1.5);
-figurenamehmm=[figureSubfolder,'\Density2_InitialNet_',num2str(InitialNet),'.jpg'];
 print(gcf, '-djpeg', '-r300',figurenamehmm)%saveas(gcf,figurenamehmm)
 
 %% Asymmetry1 of second-order directed networks
@@ -205,12 +175,3 @@ ylim([0, 10]);
 set(gca,'FontSize',16,'linewidth',1.5);
 figurenamehmm=[figureSubfolder,'\EigenratioDirected_InitialNet_',num2str(InitialNet),'.jpg'];
 print(gcf, '-djpeg', '-r300',figurenamehmm)%saveas(gcf,figurenamehmm)
-close all;
-
-
-%% 
-function GeneralDegree=CalculateDegree(OptimalNetwork)
-for i=1:size(OptimalNetwork,1)
-    GeneralDegree=(1/factorial(2))*sum(sum(OptimalNetwork,3),2);   
-end
-end
